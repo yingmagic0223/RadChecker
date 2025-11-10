@@ -1,0 +1,61 @@
+[
+  {
+    "timestamp": "2025-01-01T10:00:00",
+    "data": {
+      "patient_id": "P001",
+      "site": "Prostate",
+      "ptv_volume_cc": 150.5,
+      "num_fractions": 39,
+      "dose_grid_size": "2.5 mm",
+      "machine": "Varian TrueBeam",
+      "oar_constraints": {
+        "Rectum_V70Gy": "<10%",
+        "Bladder_V70Gy": "<15%"
+      }
+    },
+    "results": {
+      "contour_result": "Contour OK",
+      "parameter_result": "Params OK",
+      "dose_result": "Dose OK"
+    }
+  },
+  {
+    "timestamp": "2025-01-02T11:30:00",
+    "data": {
+      "patient_id": "P002",
+      "site": "Prostate",
+      "ptv_volume_cc": 120.0,
+      "num_fractions": 39,
+      "dose_grid_size": "3.0 mm",
+      "machine": "Varian TrueBeam",
+      "oar_constraints": {
+        "Rectum_V70Gy": "<10%",
+        "Bladder_V70Gy": "<15%"
+      }
+    },
+    "results": {
+      "contour_result": "Minor issues",
+      "parameter_result": "Params OK",
+      "dose_result": "Dose OK"
+    }
+  },
+  {
+    "timestamp": "2025-01-03T14:15:00",
+    "data": {
+      "patient_id": "P003",
+      "site": "Pancreas",
+      "ptv_volume_cc": 80.0,
+      "num_fractions": 25,
+      "dose_grid_size": "2.5 mm",
+      "machine": "Unknown",
+      "oar_constraints": {
+        "Duodenum_Vx": "<5%"
+      }
+    },
+    "results": {
+      "contour_result": "Warning",
+      "parameter_result": "Non-standard fx",
+      "dose_result": "Dose borderline"
+    }
+  }
+]
