@@ -1,0 +1,169 @@
+:root {
+  --primary-dark: #0d2240;
+  --primary: #1a4a8a;
+  --accent: #f59e0b;
+  --success: #16a34a;
+  --caution: #d97706;
+  --danger: #dc2626;
+}
+
+body {
+  background: #f0f4f8;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+}
+
+/* Navbar */
+.bg-primary-dark { background: var(--primary-dark) !important; }
+
+/* Tab bar */
+.tab-bar {
+  background: #fff;
+  border-bottom: 2px solid #dee2e6;
+}
+.tab-btn {
+  border: none;
+  background: transparent;
+  padding: 0.55rem 1.1rem;
+  border-bottom: 3px solid transparent;
+  color: #555;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: -2px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.tab-btn:hover { color: var(--primary); }
+.tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  font-weight: 600;
+}
+
+/* Stat cards */
+.stat-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  box-shadow: 0 1px 6px rgba(0,0,0,.07);
+}
+.stat-val {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  line-height: 1.1;
+}
+.stat-label {
+  color: #666;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+/* Bar chart rows */
+.bar-row { margin-bottom: 10px; }
+.bar-label { font-size: 0.8rem; color: #333; width: 160px; }
+.bar-track { background: #e9ecef; border-radius: 4px; height: 20px; flex: 1; }
+.bar-fill {
+  height: 20px;
+  border-radius: 4px;
+  background: var(--primary);
+  transition: width 0.5s ease;
+  display: flex;
+  align-items: center;
+  padding-left: 6px;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 28px;
+}
+
+/* Memory cards */
+.memory-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 6px rgba(0,0,0,.07);
+  padding: 1.25rem;
+}
+.memory-card .site-badge {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.memory-card .tech-badge {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: #6c757d;
+  color: #fff;
+}
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.82rem;
+}
+.metric-row:last-child { border-bottom: none; }
+.metric-name { color: #555; }
+.metric-value { font-weight: 600; color: var(--primary-dark); }
+
+/* Overall evaluation banner */
+.overall-banner {
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+}
+.overall-banner.ACCEPTABLE { background: #dcfce7; border-left: 5px solid var(--success); }
+.overall-banner.REVIEW_RECOMMENDED { background: #fef3c7; border-left: 5px solid var(--caution); }
+.overall-banner.FLAG { background: #fee2e2; border-left: 5px solid var(--danger); }
+.overall-banner.INSUFFICIENT_DATA { background: #e2e8f0; border-left: 5px solid #94a3b8; }
+
+/* Status badges in metric table */
+.badge-NORMAL { background: #dcfce7; color: #15803d; font-weight: 600; padding: 3px 8px; border-radius: 4px; }
+.badge-CAUTION { background: #fef3c7; color: #b45309; font-weight: 600; padding: 3px 8px; border-radius: 4px; }
+.badge-FLAG { background: #fee2e2; color: #b91c1c; font-weight: 600; padding: 3px 8px; border-radius: 4px; }
+
+/* AI narrative */
+.narrative-text {
+  white-space: pre-wrap;
+  line-height: 1.7;
+  font-size: 0.9rem;
+  color: #1e293b;
+}
+
+/* PTV / OAR / Beam rows */
+.entry-row {
+  background: #f8fafc;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Tiny button */
+.btn-xs {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+}
+
+/* Loading overlay */
+#loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 34, 64, 0.75);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cards */
+.card { box-shadow: 0 1px 4px rgba(0,0,0,.06); border: 1px solid #e9ecef; }
+.card-header { background: #f8fafc; font-size: 0.9rem; padding: 0.6rem 1rem; }
+
+/* Scrollable table container */
+.table-responsive { max-height: 500px; overflow-y: auto; }
