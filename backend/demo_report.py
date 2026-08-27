@@ -80,75 +80,92 @@ def make_finding(severity, item, observed, expected, evidence=None, action=None)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CASE 1 — Prostate VMAT, Unity CMM
+# CASE 1 — Prostate SBRT SIB 45 Gy / 40 Gy in 5 fx, Unity CMM
 # ─────────────────────────────────────────────────────────────────────────────
 
 PROSTATE_STATE = {
     "treatment_site": "Prostate",
-    "case_id": "Prostate_MR_20250812",
+    "case_id": "Prostate_SBRT_SIB_20250820",
 
     "plan_setup": {
-        "plan_name": "Prostate_MR_20250812",
+        "plan_name": "Prostate_SBRT_SIB_20250820",
         "machine": "Unity MR-Linac",
-        "total_dose": 7800,           # cGy → will be converted to 78 Gy
-        "total_fx": 39,
-        "rx_name": "78 Gy / 39 fx — 2.00 Gy/fx VMAT SIB",
-        "image_taken_date": "2025-08-12",
-        "compression": "No compression — supine, knee support",
+        "total_dose": 4500,           # cGy → 45 Gy (high-dose PTV level)
+        "total_fx": 5,
+        "rx_name": "45 Gy (PTV_High) / 40 Gy (PTV_SV) in 5 fx — SBRT SIB (9.0 / 8.0 Gy/fx)",
+        "image_taken_date": "2025-08-20",
+        "compression": "No compression — supine, EndoRectal balloon not used",
         "adaptation_mode": "CMM",
         "source_target": "CTV_Prostate",
     },
 
     "case_summary": (
-        "72-year-old male with intermediate-risk prostate adenocarcinoma (Gleason 3+4, "
-        "PSA 8.2). Referred for definitive radiotherapy. No prior pelvic surgery. "
-        "Moderate rectal gas on simulation CT; MR-guidance selected for daily online "
-        "adaptation."
+        "68-year-old male with high-risk prostate adenocarcinoma (Gleason 4+4, PSA 14.6, "
+        "cT2c). Referred for definitive MR-guided SBRT with simultaneous integrated boost. "
+        "No prior pelvic irradiation. Full bladder / empty rectum protocol. Daily online "
+        "adaptation planned via CMM to account for interfraction rectal filling variation."
     ),
 
     "contour_data": {
         "structures": [
-            {"name": "CTV_Prostate",  "volume": 42.1},
-            {"name": "CTV_SV",        "volume": 18.6},
-            {"name": "PTV_High",      "volume": 68.3,  "formula": "CTV_Prostate + CTV_SV expanded 5 mm (3 mm posterior)"},
-            {"name": "PTV_Elective",  "volume": 312.5, "formula": "Pelvic nodal CTV expanded 7 mm isotropically"},
+            {"name": "CTV_Prostate",  "volume": 38.5},
+            {"name": "CTV_SV",        "volume": 14.2},
+            {"name": "PTV_High",
+             "volume": 58.7,
+             "formula": "CTV_Prostate expanded 3 mm (2 mm posterior) — prescribed 45 Gy / 5 fx"},
+            {"name": "PTV_SV",
+             "volume": 36.4,
+             "formula": "CTV_SV expanded 4 mm isotropically — prescribed 40 Gy / 5 fx"},
         ]
     },
 
     "oar_analysis": {
-        "within_artring_3cm":    ["Rectum", "Bladder", "BowelBag"],
-        "overlap_75_isl":        ["Rectum", "Bladder"],
-        "active_optimization":   ["Rectum", "Bladder", "BowelBag", "FemoralHead_L", "FemoralHead_R"],
+        "within_artring_3cm":  ["Rectum", "Bladder", "Urethra"],
+        "overlap_75_isl":      ["Rectum", "Bladder"],
+        "active_optimization": ["Rectum", "Bladder", "Urethra", "FemoralHead_L", "FemoralHead_R", "PenileBulb"],
     },
 
     "coverage_summary": (
-        "Reference plan: PTV_High V95% = 97.3%, PTV_Elective V95% = 95.8%. "
-        "Rectal V70Gy = 14.2% (constraint ≤ 20%)."
+        "Reference plan: PTV_High D95% = 44.6 Gy (99.1%), PTV_SV D95% = 39.4 Gy (98.5%). "
+        "Rectal D0.03cc = 43.8 Gy (constraint < 45 Gy); Bladder D0.03cc = 44.1 Gy."
     ),
     "overlap_summary": (
-        "Rectum overlaps PTV_High by 4.1 cc (posterior wall contact). "
-        "Bladder overlaps PTV_High by 7.8 cc (trigone region)."
+        "Rectum overlaps PTV_High by 1.8 cc (anterior rectal wall, posterior prostate). "
+        "Bladder overlaps PTV_High by 5.2 cc at bladder neck / trigone. "
+        "Urethra passes through PTV_High over 3.2 cm — urethral D0.1cc = 42.3 Gy."
     ),
     "optimization_challenges": (
-        "Posterior PTV_High coverage vs. rectal anterior wall constraint; "
-        "seminal vesicle tip coverage limited by rectal proximity; "
-        "daily bladder filling variation managed via CMM online adaptation"
+        "Rectal max dose (D0.03cc) within 1.2 Gy of constraint at 45 Gy high-dose level; "
+        "urethral dose must be balanced against posterior PTV_High coverage; "
+        "SV tip coverage conflicts with rectal anterior wall sparing; "
+        "CMM online adaptation critical to maintain rectal constraint on treatment days"
     ),
 
     "critic_results": {
         "findings": [
             make_finding(
                 "WARNING",
-                "Rectal V70Gy near constraint limit",
-                "V70Gy = 18.9%",
-                "≤ 20%",
+                "Rectal D0.03cc near constraint ceiling",
+                "43.8 Gy",
+                "< 45 Gy",
                 evidence="Rectum DVH",
+            ),
+            make_finding(
+                "WARNING",
+                "Urethral D0.1cc above institutional guideline",
+                "42.3 Gy",
+                "≤ 42 Gy (institutional)",
+                evidence="Urethra DVH",
             ),
         ]
     },
 
     "summary_notes": [],
-    "_mock_contour_groups": {"target": ["CTV_Prostate", "CTV_SV"], "ed": ["Rectum", "Bladder"], "other": []},
+    "_mock_contour_groups": {
+        "target": ["CTV_Prostate", "CTV_SV"],
+        "ed": ["Rectum", "Bladder", "Urethra"],
+        "other": [],
+    },
 }
 
 
@@ -230,6 +247,110 @@ PANCREAS_STATE = {
 }
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# CASE 3 — Pancreas body SBRT 50 Gy / 5 fx, Unity CMM (borderline resectable)
+# ─────────────────────────────────────────────────────────────────────────────
+
+PANCREAS2_STATE = {
+    "treatment_site": "Pancreas",
+    "case_id": "Pancreas_Body_SBRT_20250818",
+
+    "plan_setup": {
+        "plan_name": "Pancreas_Body_SBRT_20250818",
+        "machine": "Unity MR-Linac",
+        "total_dose": 5000,           # cGy → 50 Gy
+        "total_fx": 5,
+        "rx_name": "50 Gy / 5 fx — 10.0 Gy/fx SBRT (dose-painted SIB)",
+        "image_taken_date": "2025-08-18",
+        "compression": "Abdominal compression belt (20 mmHg) — residual motion ≤ 3 mm SI",
+        "adaptation_mode": "CMM",
+        "source_target": "GTV_Pancreas",
+    },
+
+    "case_summary": (
+        "58-year-old male with borderline-resectable pancreatic body adenocarcinoma "
+        "(abutting SMA < 90°). Post 6 cycles FOLFIRINOX with partial response; CA19-9 "
+        "normalised. SBRT at 50 Gy / 5 fx planned as conversion therapy prior to surgical "
+        "reassessment. Celiac axis and superior mesenteric artery proximity are principal "
+        "dose-limiting constraints alongside stomach and colon."
+    ),
+
+    "contour_data": {
+        "structures": [
+            {"name": "GTV_Pancreas",  "volume": 12.8},
+            {"name": "ITV_Pancreas",  "volume": 17.3},
+            {"name": "PTV_High",
+             "volume": 28.9,
+             "formula": "ITV_Pancreas expanded 3 mm isotropically — prescribed 50 Gy / 5 fx"},
+            {"name": "PTV_Low",
+             "volume": 52.4,
+             "formula": "ITV_Pancreas expanded 5 mm isotropically — prescribed 40 Gy / 5 fx (elective margin)"},
+        ]
+    },
+
+    "oar_analysis": {
+        "within_artring_3cm":  ["Stomach", "Duodenum", "SmallBowel", "Colon"],
+        "overlap_75_isl":      ["Stomach", "Duodenum"],
+        "active_optimization": [
+            "Stomach", "Duodenum", "SmallBowel", "Colon",
+            "SpinalCord", "Liver", "Kidney_L", "Kidney_R",
+        ],
+    },
+
+    "coverage_summary": (
+        "Reference plan: PTV_High D95% = 49.2 Gy (98.4%), PTV_Low D95% = 39.5 Gy (98.8%). "
+        "Stomach D0.03cc = 32.8 Gy (constraint ≤ 35 Gy); Duodenum D0.03cc = 31.5 Gy (≤ 33 Gy). "
+        "Combined liver mean = 6.4 Gy (well within tolerance)."
+    ),
+    "overlap_summary": (
+        "Stomach posterior wall directly contacts PTV_High over a 2.4 cm² surface — "
+        "minimum geometric gap of 0 mm at superior pole. "
+        "Duodenum sweeps within 3 mm of PTV_High at the pancreatic neck. "
+        "Left colon flexure within PTV_Low at inferior margin."
+    ),
+    "optimization_challenges": (
+        "Stomach max dose limits PTV_High superior coverage — D95% achievable only via "
+        "steep gradient (≥ 10 Gy/cm falloff required); "
+        "simultaneous duodenum and stomach constraints compete at overlapping dose levels; "
+        "CMM online adaptation used to re-evaluate stomach position daily before delivery; "
+        "colon flexure position variable — backup plan without colon in field prepared"
+    ),
+
+    "critic_results": {
+        "findings": [
+            make_finding(
+                "CRITICAL",
+                "Stomach D0.03cc exceeds institutional limit on reference plan",
+                "32.8 Gy",
+                "≤ 32 Gy (institutional; AAPM TG-101 ≤ 35 Gy)",
+                evidence="Stomach DVH",
+                action=(
+                    "Dose-paint or reduce superior PTV_High coverage; "
+                    "re-optimise with tighter stomach objective before approval"
+                ),
+            ),
+            make_finding(
+                "WARNING",
+                "Duodenum D0.03cc within 5% of constraint",
+                "31.5 Gy",
+                "≤ 33 Gy (AAPM TG-101)",
+                evidence="Duodenum DVH",
+            ),
+            make_finding(
+                "WARNING",
+                "Colon D0.03cc not evaluated — structure absent on reference CT",
+                "Not contoured",
+                "Contour and constrain if within PTV_Low",
+                evidence="Colon — structure set",
+            ),
+        ]
+    },
+
+    "summary_notes": [],
+    "_mock_contour_groups": {},
+}
+
+
 # ── Render and print ──────────────────────────────────────────────────────────
 
 SEPARATOR = "\n" + "═" * 72 + "\n"
@@ -239,8 +360,9 @@ print("  DEMO OUTPUT — RT Plan Checker V8 Structured Report")
 print(SEPARATOR)
 
 for label, state in [
-    ("CASE 1 — Prostate VMAT / Unity CMM", PROSTATE_STATE),
-    ("CASE 2 — Pancreas SBRT / Unity MM",  PANCREAS_STATE),
+    ("CASE 1 — Prostate SBRT SIB 45/40 Gy / 5 fx  /  Unity CMM", PROSTATE_STATE),
+    ("CASE 2 — Pancreas Head SBRT 40 Gy / 5 fx     /  Unity MM",  PANCREAS_STATE),
+    ("CASE 3 — Pancreas Body SBRT 50 Gy / 5 fx     /  Unity CMM", PANCREAS2_STATE),
 ]:
     print(f"\n{'─' * 72}")
     print(f"  {label}")
