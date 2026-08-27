@@ -510,12 +510,17 @@ def _sec_targets(state: Dict[str, Any], setup: Dict[str, Any]) -> List[str]:
 
 def _sec_oars(state: Dict[str, Any]) -> List[str]:
     """
-    Section 4 — OARs selected by three clinical criteria:
+    Section 4 — OARs: deduplicated union of three clinical selection criteria:
       a) within 3 cm ARTring
       b) overlap with 75% ISL
       c) actively used in optimization (source structures, not margin structures)
+    The three lists are merged into one unique, ordered list.
     """
     lines = ["## 4. OARs"]
+    lines.append(
+        "*(Selected by: within 3 cm ARTring, overlap with 75% ISL, "
+        "or active in optimization — deduplicated)*"
+    )
 
     oar_analysis: Dict[str, Any] = (
         state.get("oar_analysis") or state.get("oar_categories") or {}
@@ -541,26 +546,20 @@ def _sec_oars(state: Dict[str, Any]) -> List[str]:
         except Exception:
             pass
 
-    lines.append("- **Within 3 cm ARTring**:")
-    if artring_oars:
-        for oar in artring_oars:
-            lines.append(f"  - `{_inline_contour_name(oar)}`")
-    else:
-        lines.append("  - Not available (requires engine OAR spatial analysis)")
+    # Merge all three lists preserving first-seen order, no duplicates
+    seen: set = set()
+    unique_oars: List[str] = []
+    for oar in artring_oars + isl_oars + opt_oars:
+        key = _inline_contour_name(oar).lower()
+        if key and key not in seen:
+            seen.add(key)
+            unique_oars.append(oar)
 
-    lines.append("- **Overlapping with 75% ISL**:")
-    if isl_oars:
-        for oar in isl_oars:
-            lines.append(f"  - `{_inline_contour_name(oar)}`")
+    if unique_oars:
+        for oar in unique_oars:
+            lines.append(f"- `{_inline_contour_name(oar)}`")
     else:
-        lines.append("  - Not available")
-
-    lines.append("- **Active in Optimization** (source structures, excluding margin structures):")
-    if opt_oars:
-        for oar in opt_oars:
-            lines.append(f"  - `{_inline_contour_name(oar)}`")
-    else:
-        lines.append("  - Not specified")
+        lines.append("- Not available")
 
     return lines
 
